@@ -3,33 +3,33 @@
 # and conform it to only the observations that will be relevent to us. 
 
 # Set your working directory and load in the 'dplyr' package into your current R session.
+setwd("~/INFO201/lectures/m15-plotly/exercise-3")
 
-
-# Read in `IHME_WASHINGTON_CANCER_MORTALITY_RATES_1980_2014.csv` data using relative path
-
+# Read in `IHME_WASHINGTON_MORTALITY_RATES_1980_2014.csv` data using relative path
+data <- read.csv('data/IHME_WASHINGTON_MORTALITY_RATES_1980_2014.csv', stringsAsFactors=FALSE)
 
 # Remove all non-county observations from the data set 
-
+data <- data %>% filter(location_name != 'Washington')
 
 # Remove all observations that contain mortality rates for "both" sex
-
+data <- data %>% filter(sex != 'Both')
 
 # Now let's take a closer look at the data for just "King County"
 # Store all the relevant information in a variable called 'King.County'
-
+King.County <- data %>% filter(location_name == 'King County')
 
 # For the remainder of the exercise, we will be using "Neoplasms" as
 # our cancer cause. Store inside a variable 'neoplasms.kc' all the information
 # with neoplasms as the cause.
-
+neoplasms.kc <- King.County %>% filter(cause_name == 'Neoplasms')
 
 # To make things a little easier for graphing later, let's just take data for the 
 # past 10 years. (Starting at 2014)
-
+neoplasms.kc <- neoplasms.kc %>% filter(year_id > 2004)
 
 # Using our data from 2005-2014, create a data frame that has only the 'sex', 'year_id'
 # and 'mortality_rate'
-
+neoplasms.kc <- neoplasms.kc %>% select(sex, year_id, mortality_rate)
 
 # Take a look at our data. You see how the data is "long"? For the plot that we are 
 # interested in making, the data must be "wide". In a lot of instances where you are
@@ -37,13 +37,14 @@
 # such apis. To do so now, we will be using a package called `reshape2`.
 
 # Install the `reshape2` package and load it into your current session
-
+#install.packages('reshape2')
+library(reshape2)
 
 # For the sake of time, we've provided code on how to properly "cast" your data to
 # wide format (assuming that you've correctly followed the instructions above). 
 # We would highly recommend you looking into how this works. Below is a link 
 # that explains the concept: http://seananderson.ca/2013/10/19/reshape.html
-prepped.data <- dcast(neoplasms, year_id ~sex)
+prepped.data <- dcast(neoplasms.kc, year_id ~sex)
 
 ######################## Plotting Data #################################
 # Now that our data has been prepped, it's time to create pretty visuals.
